@@ -1,24 +1,27 @@
 let todos = JSON.parse(localStorage.getItem("myTodos")) || [];
-
+const save = () => localStorage.setItem("myTodos", JSON.stringify(todos));
 const ulElem = document.querySelector("#todo-list");
 const render = () => {
   ulElem.innerHTML = "";
   todos.forEach((todo) => {
     const li = document.createElement("li");
-    li.innerHTML = `<span ${todo.completed && 'style="text-decoration: line-through"'}>${todo.text}</span>`;
+    li.innerHTML = `<span ${
+      todo.completed ? 'style="text-decoration: line-through"' : ""
+    }>${todo.text}</span>`;
     li.addEventListener("click", () => {
-      const todoToToggle = todos.find((todoitem) => todo.id === todoitem.id);
-      todoToToggle.completed = !todoToToggle.completed;
+      todo.completed = !todo.completed;
       render();
+      save();
     });
     const clearBtn = document.createElement("button");
     clearBtn.classList.add("delete-btn");
     clearBtn.textContent = "X";
-    clearBtn.addEventListener('click', (event) => {
+    clearBtn.addEventListener("click", (event) => {
       event.stopPropagation();
-      todos = todos.filter(t => todo.id !== t.id);
+      todos = todos.filter((t) => todo.id !== t.id);
       render();
-    })
+      save();
+    });
     li.appendChild(clearBtn);
     ulElem.appendChild(li);
   });
@@ -37,7 +40,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     }
     const newLiElem = { id: Date.now(), text: inputValue, completed: false };
     todos.push(newLiElem);
-    localStorage.setItem("myTodos", JSON.stringify(todos));
+    save();
     inputField.value = "";
     render();
   });
